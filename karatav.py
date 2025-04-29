@@ -25,6 +25,9 @@ LOGA_GARUMS = 500
 
 root = Tk()
 
+root.bind("<F11>", lambda e: root.attributes("-fullscreen",True))
+root.bind("<Escape>", lambda e: root.attributes("-fullscreen",False))
+
 root.title("Karatavas")
 root.geometry(f"{LOGA_PLATUMS}x{LOGA_GARUMS}")
 root.resizable(FALSE, FALSE)
