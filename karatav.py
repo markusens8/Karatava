@@ -1,6 +1,12 @@
 from tkinter import *
 from random import randint, choice
+import sys
 
+
+if getattr(sys, 'frozen', False):
+    import pyi_splash
+
+ 
 vardi = [
     "ābols", "banāns", "cilvēks", "durvis", "ēka", "frāze", "galds", "hokejs", "izglītība", "jūra",
     "koks", "laiva", "māja", "nakts", "ogle", "pilsēta", "rīts", "saule", "tēvs", "ūdens",
@@ -17,10 +23,10 @@ vardi = [
 alfabets = 'a ā b c č d e ē f g ģ h i ī j k ķ l ļ m n ņ o p r s š t u ū v z ž'
 
 PLATUMS = 200
-GARUMS = 350
+GARUMS = 300
 
 LOGA_PLATUMS = 650
-LOGA_GARUMS = 500
+LOGA_GARUMS = 350
 
 
 root = Tk()
@@ -30,11 +36,10 @@ root.bind("<Escape>", lambda e: root.attributes("-fullscreen",False))
 
 root.title("Karatavas")
 root.geometry(f"{LOGA_PLATUMS}x{LOGA_GARUMS}")
-root.resizable(FALSE, FALSE)
-DrawSpace = Canvas(root, width=PLATUMS, height=GARUMS, bg='gray')
-DrawSpace.place(x=0, y=0)
+#root.resizable(FALSE, FALSE)
 
 
+'''
 class cilvecins:
     @staticmethod
     def draw_base():
@@ -62,7 +67,7 @@ class cilvecins:
         DrawSpace.create_line(150, 200, 170, 250, width=5)
 
 Dzīvības = [cilvecins.draw_legs, cilvecins.draw_arms, cilvecins.draw_body, cilvecins.draw_head, cilvecins.draw_hangplatform, cilvecins.draw_post, cilvecins.draw_base]
-
+'''
 
 
 class Spele:
@@ -147,29 +152,41 @@ class UzzimeKadrus:
             self.entry_burtu_ievade.delete(0, END)
             root.after(100, lambda: self.jauna_spele.parbauda_burtu(self.burts))
 
-        self.jauna_spele = Spele()
-        self.cilveks = cilvecins()
+        self.frame_cilvecins = Frame(root)
+        self.frame_speles_lauks = Frame(root, pady=20)
 
-        self.entry_burtu_ievade = Entry(root)
-        self.entry_burtu_ievade.place(relx=0.65, rely=0.65, anchor="center")
-        root.bind("<Return>", nosuti_burtu)
+        self.canvas_cilvecina_zimejums = Canvas(self.frame_cilvecins, width=PLATUMS, height=GARUMS)
+        self.label_minamais_vards = Label(self.frame_speles_lauks, text="_ _ _ _ _ _", font=("Arial",35))
+        self.label_izmantotie_burti = Label(self.frame_speles_lauks, text="A B C D E F Z", font=("Arial", 25))
+        self.entry_burtu_ievade = Entry(self.frame_speles_lauks, width=2, font=("Arial",30))
 
-        DrawSpace = Canvas(root, width=PLATUMS, height=GARUMS, bg='gray')
-        DrawSpace.place(relx=0.025, rely=0.025)
+        self.canvas_cilvecina_zimejums.pack(padx=30,pady=20)
+        self.label_minamais_vards.pack()
+        self.label_izmantotie_burti.pack()
+        self.entry_burtu_ievade.pack(pady=40)
 
-        self.izmantotie_burti_label = Label(root, text="Izmantotie burti:", font=("Times new roman", 12))
-        self.izmantotie_burti_label.place(relx=0.65, rely=0.70, anchor="center")
+        self.frame_cilvecins.pack(side="left", fill="y")
+        self.frame_speles_lauks.pack(expand="True")
+
+        #pamats
+        self.canvas_cilvecina_zimejums.create_line(40,250,165,250, width=6)
+        #stabs
+        self.canvas_cilvecina_zimejums.create_line(100,250,100,50, width=6)
+        #pa lab
+        self.canvas_cilvecina_zimejums.create_line(100,50,175,50, width=6)
+        #uz lej
+        self.canvas_cilvecina_zimejums.create_line(175,50,175,80, width=6)
+
+
+
 
     def noteikumu_ekrans(self):
         pass
 
     def nodzes_kadru(self):
-        DrawSpace.delete('all')
+        #DrawSpace.delete('all')
         for widget in root.winfo_children():
             widget.destroy()
-
-DrawSpace = Canvas(root, width=PLATUMS, height=GARUMS, bg='gray')
-DrawSpace.place(x=0, y=0)
 
 Vārds = choice(vardi)
 Izpildīts_Burts = '_ ' * len(Vārds)
