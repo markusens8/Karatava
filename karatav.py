@@ -73,59 +73,34 @@ Dzīvības = [cilvecins.draw_legs, cilvecins.draw_arms, cilvecins.draw_body, cil
 class Spele:
     def __init__(self):
         self.vards = choice(vardi)
-        self.gajienu_skaits = 7
+        self.gajienu_skaits : int = 7
         self.izmantotie_burti = set()
-        self.speles_renderetajs = SpeleGUI(self.vards)
 
-    def parbauda_burtu(self, burts):
-        # 1. jāizvada burts uz ekrāna <- šito citā funkcijā
-        # 2. ja ir burts, tad ieliec to vārdā, ja nav, tad 3.
-        # 3. gajienuskaits++, pieliec cilvēciņam detaļu, pārbauda vai ir vel gājienu ja nav, tad spele beidzas
+    def parbauda_burtu_varda(self, burts) -> bool:
+        # parbauda vai burts ir jau ticis minets
+        if burts not in self.izmantotie_burti:
+            self.izmantotie_burti.add(burts)
 
-        # Ja šāds burts ir jau minets
-        if burts in self.izmantotie_burti:
-            return
+            if burts in self.vards:
+                return True
+            else:
+                self.gajienu_skaits -= 1
+                if self.gajienu_skaits == 0:
+                    self.beidz_speli()
+                return False
+        return None
 
-        if burts in self.vards:
-            self.indexes = [i for i, c in enumerate(self.vards) if c == burts]
-            self.speles_renderetajs.ieliec_burtu_varda(burts, self.indexes)
-            print(type(self.gajienu_skaits))
-        else:
-            self.gajienu_skaits -= 1
-            if self.gajienu_skaits < 1:
-                self.spele_beidzas()
+    # Atgriež visus indeksus, kur ir sastopams noteikts burts
+    def dabu_index(self,burts) -> list:
+        indeksi = []
+        for index, char in enumerate(self.vards):
+            if char == burts:
+                indeksi.append(index)
+        return indeksi
 
-        self.izmantotie_burti.add(burts)
-        self.speles_renderetajs.izvadi_burtu(burts)
+    def beidz_speli(self):
+        pass
 
-    def spele_beidzas(self):
-        root.quit()
-
-# Atbild par spēles dinamisko GUI
-class SpeleGUI:
-    # inicializācijā izveido logu priekš vārda
-    def __init__(self, vards):
-        # Pagaidu variants vārda attēlošanai uz ekrāna
-        self.minamais_vards = " ".join("_" * len(vards))
-        self.label_minamais_vards = Label(root, text=self.minamais_vards, font=("Times new roman", 20), borderwidth=2, relief="solid")
-        self.label_minamais_vards.place(relx=0.65, rely=0.45, anchor="center")
-        self.izmantotie_burti_label = Label(root, text="", font=("Times new roman", 12))
-        self.izmantotie_burti_label.place(relx=0.65, rely=0.75, anchor="center")
-
-    # Izvada burtu izmantotajos burtos
-    def izvadi_burtu(self, burts):
-        current_text = self.izmantotie_burti_label.cget("text")
-        new_text = current_text + " " + burts if current_text else burts
-        self.izmantotie_burti_label.config(text=new_text)
-
-    # Aizpilda minamo vārdu
-    def ieliec_burtu_varda(self, burts, indexes):
-        self.minamais_vards_list = self.minamais_vards.split()
-        for i in indexes:
-            self.minamais_vards_list[i] = burts
-
-        self.minamais_vards = " ".join(self.minamais_vards_list)
-        self.label_minamais_vards.config(text=self.minamais_vards)
 
 class UzzimeKadrus:
     def nomaina_kadru(self, kadrs):
@@ -146,24 +121,45 @@ class UzzimeKadrus:
 
     # Uzzīmē spēles statisko GUI
     def speles_ekrans(self):
-        # Nosūta ievadīto burtu apstrādei
+        self.jauna_spele = Spele()
+
+        # Pārbauda ievadīto burtu un atjaunina GUI
         def nosuti_burtu(event):
-            self.burts = self.entry_burtu_ievade.get()
-            self.entry_burtu_ievade.delete(0, END)
-            root.after(100, lambda: self.jauna_spele.parbauda_burtu(self.burts))
+            self.burts = entry_burtu_ievade.get().lower()
+            self.burts_ir_varda = self.jauna_spele.parbauda_burtu_varda(self.burts)
+
+            #Funkcija palaizas ja burts vel nav ticis minets
+            if self.burts_ir_varda is not None:
+                entry_burtu_ievade.delete(0, END)
+                
+                # Ja minetais burts ir varda
+                if self.burts_ir_varda is True:
+                    # parvers tekstu par sarakstu ar char, jo stringus pitona nevar mainit
+                    self.teksts = list(self.label_minamais_vards["text"])
+
+                    self.indeksi = self.jauna_spele.dabu_index(self.burts)
+                    for indekss in self.indeksi:
+                        self.teksts[indekss*2] = self.burts.upper()
+
+                    self.label_minamais_vards["text"] = ''.join(self.teksts)
+
+                # Ja minetais burts nav varda
+                else:
+                    self.label_izmantotie_burti["text"] = self.label_izmantotie_burti["text"] + f"{self.burts.upper()} "
+
 
         self.frame_cilvecins = Frame(root)
         self.frame_speles_lauks = Frame(root, pady=20)
 
         self.canvas_cilvecina_zimejums = Canvas(self.frame_cilvecins, width=PLATUMS, height=GARUMS)
         self.label_minamais_vards = Label(self.frame_speles_lauks, text="_ _ _ _ _ _", font=("Arial",35))
-        self.label_izmantotie_burti = Label(self.frame_speles_lauks, text="A B C D E F Z", font=("Arial", 25))
-        self.entry_burtu_ievade = Entry(self.frame_speles_lauks, width=2, font=("Arial",30))
+        self.label_izmantotie_burti = Label(self.frame_speles_lauks, text="", font=("Arial", 25))
+        entry_burtu_ievade = Entry(self.frame_speles_lauks, width=2, font=("Arial",30))
 
         self.canvas_cilvecina_zimejums.pack(padx=30,pady=20)
-        self.label_minamais_vards.pack()
+        self.label_minamais_vards.pack(pady=(0,20))
         self.label_izmantotie_burti.pack()
-        self.entry_burtu_ievade.pack(pady=40)
+        entry_burtu_ievade.pack(pady=40)
 
         self.frame_cilvecins.pack(side="left", fill="y")
         self.frame_speles_lauks.pack(expand="True")
@@ -176,6 +172,8 @@ class UzzimeKadrus:
         self.canvas_cilvecina_zimejums.create_line(100,50,175,50, width=6)
         #uz lej
         self.canvas_cilvecina_zimejums.create_line(175,50,175,80, width=6)
+
+        entry_burtu_ievade.bind("<Return>", nosuti_burtu)
 
 
 
