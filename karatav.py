@@ -3,9 +3,6 @@ from random import randint, choice
 import sys
 
 
-if getattr(sys, 'frozen', False):
-    import pyi_splash
-
  
 vardi = [
     "ābols", "banāns", "cilvēks", "durvis", "ēka", "frāze", "galds", "hokejs", "izglītība", "jūra",
@@ -22,9 +19,11 @@ vardi = [
 ]
 alfabets = 'a ā b c č d e ē f g ģ h i ī j k ķ l ļ m n ņ o p r s š t u ū v z ž'
 
+# Canva cilvecina zimesanas laukums
 PLATUMS = 200
 GARUMS = 300
 
+# Visa loga izmers
 LOGA_PLATUMS = 650
 LOGA_GARUMS = 350
 
@@ -39,37 +38,6 @@ root.geometry(f"{LOGA_PLATUMS}x{LOGA_GARUMS}")
 #root.resizable(FALSE, FALSE)
 
 
-'''
-class cilvecins:
-    @staticmethod
-    def draw_base():
-        DrawSpace.create_line(50, 300, 150, 300, width=5)
-    @staticmethod
-    def draw_post():
-        DrawSpace.create_line(50, 300, 50, 50, width=5)
-    @staticmethod
-    def draw_hangplatform():
-        DrawSpace.create_line(50, 50, 150, 50, width=5)
-        DrawSpace.create_line(150, 50, 150, 100, width=5)
-    @staticmethod
-    def draw_head():
-        DrawSpace.create_oval(135, 100, 165, 130, width=5)
-    @staticmethod
-    def draw_body():
-        DrawSpace.create_line(150, 130, 150, 200, width=5)
-    @staticmethod
-    def draw_arms():
-        DrawSpace.create_line(150, 150, 170, 180, width=5)
-        DrawSpace.create_line(150, 150, 130, 180, width=5)
-    @staticmethod
-    def draw_legs():
-        DrawSpace.create_line(150, 200, 130, 250, width=5)
-        DrawSpace.create_line(150, 200, 170, 250, width=5)
-
-Dzīvības = [cilvecins.draw_legs, cilvecins.draw_arms, cilvecins.draw_body, cilvecins.draw_head, cilvecins.draw_hangplatform, cilvecins.draw_post, cilvecins.draw_base]
-'''
-
-
 class Spele:
     def __init__(self):
         self.vards = choice(vardi)
@@ -77,12 +45,14 @@ class Spele:
         self.izmantotie_burti = set()
 
     def parbauda_burtu_varda(self, burts) -> bool:
-        # parbauda vai burts ir jau ticis minets
+        # ja burts vel nav ticis minets, tad to apstrada, ja ir, tad atgriez none 
         if burts not in self.izmantotie_burti:
             self.izmantotie_burti.add(burts)
 
+            # Ja burta minejums atrodas varda, atgriež true
             if burts in self.vards:
                 return True
+            # Ja burta minejums nav varda, tad atgriez false
             else:
                 self.gajienu_skaits -= 1
                 if self.gajienu_skaits == 0:
@@ -99,7 +69,7 @@ class Spele:
         return indeksi
 
     def beidz_speli(self):
-        pass
+        kadru_zimetajs.beigu_ekrans()
 
 
 class UzzimeKadrus:
@@ -109,7 +79,7 @@ class UzzimeKadrus:
             case 'sakuma_ekrans': self.sakuma_ekrans()
             case 'speles_ekrans': self.speles_ekrans()
             case 'noteikumu_ekrans': self.noteikumu_ekrans()
-
+    
     def sakuma_ekrans(self):
         self.poga_sakt = Button(root, width=12, text="Sākt", command=lambda: self.nomaina_kadru('speles_ekrans'))
         self.poga_iziet = Button(root, width=12, text="Iziet", command=lambda: root.quit())
@@ -152,7 +122,7 @@ class UzzimeKadrus:
         self.frame_speles_lauks = Frame(root, pady=20)
 
         self.canvas_cilvecina_zimejums = Canvas(self.frame_cilvecins, width=PLATUMS, height=GARUMS)
-        self.label_minamais_vards = Label(self.frame_speles_lauks, text="_ _ _ _ _ _", font=("Arial",35))
+        self.label_minamais_vards = Label(self.frame_speles_lauks, text=f"_ " * len(self.jauna_spele.vards), font=("Arial",35))
         self.label_izmantotie_burti = Label(self.frame_speles_lauks, text="", font=("Arial", 25))
         entry_burtu_ievade = Entry(self.frame_speles_lauks, width=2, font=("Arial",30))
 
@@ -164,35 +134,49 @@ class UzzimeKadrus:
         self.frame_cilvecins.pack(side="left", fill="y")
         self.frame_speles_lauks.pack(expand="True")
 
-        #pamats
-        self.canvas_cilvecina_zimejums.create_line(40,250,165,250, width=6)
-        #stabs
-        self.canvas_cilvecina_zimejums.create_line(100,250,100,50, width=6)
-        #pa lab
-        self.canvas_cilvecina_zimejums.create_line(100,50,175,50, width=6)
-        #uz lej
-        self.canvas_cilvecina_zimejums.create_line(175,50,175,80, width=6)
+
+        self.canvas_cilvecina_zimejums.create_line(40,250,165,250, width=6) # Pamats
+        self.canvas_cilvecina_zimejums.create_line(100,250,100,50, width=6) # Stabs
+        self.canvas_cilvecina_zimejums.create_line(100,50,175,50, width=6) # Pa labi
+        self.canvas_cilvecina_zimejums.create_line(175,50,175,80, width=6) # Uz leju
+        self.canvas_cilvecina_zimejums.create_oval(160, 80, 190, 110) # Galva
+        self.canvas_cilvecina_zimejums.create_line(175, 110, 175, 160) # Ķermenis
+        self.canvas_cilvecina_zimejums.create_line(175, 110, 160, 140) # kreisā roka
+        self.canvas_cilvecina_zimejums.create_line(175, 110, 190, 140) # Labā roka
+        self.canvas_cilvecina_zimejums.create_line(175, 160, 160, 190) # kreisā kāja
+        self.canvas_cilvecina_zimejums.create_line(175, 160, 190, 190) # Labā kāja
 
         entry_burtu_ievade.bind("<Return>", nosuti_burtu)
 
-
-
+    def beigu_ekrans(self, uzvareja:bool, gajienu_skaits : int):
+        if uzvareja:
+            self.label_uzvara = Label(root, text="uzvara!")
+            self.label_gajienu_skaits = Label(root, text=f"gajienu skaits: {gajienu_skaits}")
+            
+        else:
+            pass
 
     def noteikumu_ekrans(self):
-        pass
+        noteikumi = Toplevel(root)
+        noteikumi.title("Noteikumi")
+        width, height = root.winfo_screenwidth(), root.winfo_screenheight()
+        noteikumi.geometry(f'{width}x{height}')
+        noteikumi.state("zoomed")
+        
+        t1 = Label(noteikumi,text="Tev ir 7 gājieni, lai nepakārtu cilvēku!")
+        t2 = Label(noteikumi, text="Ievadi, burtu norādītajā laukā, katrs nepareizais burts atņem tev vienu gājienu!")
+        t3 = Label(noteikumi, text="Atmini vārdu, lai uzvarētu!")
+        t1.place(relx=0.5, rely = 0.48, anchor=CENTER)
+        t2.place(relx = 0.5, rely=0.5, anchor=CENTER)
+        t3.place(relx = 0.5, rely=0.52, anchor=CENTER)
+        
+            
+        
 
     def nodzes_kadru(self):
         #DrawSpace.delete('all')
         for widget in root.winfo_children():
             widget.destroy()
-
-Vārds = choice(vardi)
-Izpildīts_Burts = '_ ' * len(Vārds)
-Uzminēts = False
-Uzminētie_Burti = []
-Uzminētie_Vārdi = []
-Dzīvības = 7
-
 
 kadru_zimetajs = UzzimeKadrus()
 kadru_zimetajs.sakuma_ekrans()
