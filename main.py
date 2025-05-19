@@ -3,7 +3,7 @@ from random import randint, choice
 import sys
 
 #TODO 
-# smukaku sakuma ekranu
+# garakus vardus
 
 
 vardi = [
@@ -26,17 +26,26 @@ PLATUMS = 200
 GARUMS = 300
 
 # Visa loga izmers
-LOGA_PLATUMS = 650
+LOGA_PLATUMS = 600
 LOGA_GARUMS = 350
-
+BACKGROUND = "#808080"
 
 root = Tk()
+root.resizable(FALSE, FALSE)
+root.option_add("*Background", f"{BACKGROUND}")
+# mainmenu = PhotoImage(Image.open("main_menu.png"))
 
-root.bind("<F11>", lambda e: root.attributes("-fullscreen",True))
-root.bind("<Escape>", lambda e: root.attributes("-fullscreen",False))
+
+# mainmenu = PhotoImage(file="main_menu.png")
+# mainmenu_label = Label(root, image=mainmenu)
+# mainmenu_label.pack(side="top", fill="both", expand="yes")
+
+
 
 root.title("Karatavas")
 root.geometry(f"{LOGA_PLATUMS}x{LOGA_GARUMS}")
+root.configure(bg="#808080")
+
 #root.resizable(FALSE, FALSE)
 
 
@@ -85,13 +94,28 @@ class UzzimeKadrus:
     
 
     def sakuma_ekrans(self):
-        self.poga_sakt = Button(root, width=12, text="Sākt", command=lambda: self.nomaina_kadru('speles_ekrans'))
-        self.poga_iziet = Button(root, width=12, text="Iziet", command=lambda: root.quit())
-        self.poga_noteikumi = Button(root, width=12, text="Noteikumi", command= self.noteikumu_ekrans)
+        self.font = ("Arial", 15)
+        self.outline = "black"       
 
-        self.poga_sakt.place(relx=0.1, y=LOGA_GARUMS-200)
-        self.poga_iziet.place(relx=0.45, y=LOGA_GARUMS-200)
-        self.poga_noteikumi.place(relx=0.8, y=LOGA_GARUMS-200)
+        self.main_menu = PhotoImage(file="main_menu.png")
+        self.main_menu_label = Label(root, image=self.main_menu)
+        self.main_menu_label.pack(side="top", fill="both", expand="yes")
+
+        self.poga_sakt = Button(root, width=15, text="Sākt", borderwidth=5, command=lambda: self.nomaina_kadru('speles_ekrans'))
+        self.poga_iziet = Button(root, width=15, text="Iziet", borderwidth=5, command=lambda: root.quit())
+        self.poga_noteikumi = Button(root, width=15, text="Noteikumi", borderwidth=5, command= self.noteikumu_ekrans)
+
+        self.poga_sakt.config(font=self.font)
+        self.poga_iziet.config(font=self.font)
+        self.poga_noteikumi.config(font=self.font)
+
+        self.poga_sakt.place(relx=0.7, rely=0.38, anchor=CENTER)
+        self.poga_noteikumi.place(relx=0.7, rely=0.53, anchor=CENTER)
+        self.poga_iziet.place(relx=0.7, rely=0.68, anchor=CENTER)
+        
+    
+        
+        
 
 
     def speles_ekrans(self):
@@ -128,10 +152,10 @@ class UzzimeKadrus:
                 # Atjaunina atlikušo gājienu skaitu
                 self.label_gajienu_skaits["text"] = f"Atlikuši gājieni: {self.jauna_spele.gajienu_skaits}"
 
-        self.frame_cilvecins = Frame(root)
-        self.frame_speles_lauks = Frame(root, pady=20)
+        self.frame_cilvecins = Frame(root, bg=BACKGROUND, borderwidth=0,)
+        self.frame_speles_lauks = Frame(root, pady=20, bg=BACKGROUND, borderwidth=0)
 
-        self.canvas_cilvecina_zimejums = Canvas(self.frame_cilvecins, width=PLATUMS, height=GARUMS)
+        self.canvas_cilvecina_zimejums = Canvas(self.frame_cilvecins, width=PLATUMS, height=GARUMS, borderwidth=0)
         self.label_minamais_vards = Label(self.frame_speles_lauks, text=f"_ " * len(self.jauna_spele.vards), font=("Arial",35))
         self.label_izmantotie_burti = Label(self.frame_speles_lauks, text="", font=("Arial", 25))
         entry_burtu_ievade = Entry(self.frame_speles_lauks, width=2, font=("Arial",30))
@@ -173,14 +197,14 @@ class UzzimeKadrus:
     def beigu_ekrans(self, uzvareja:bool):
         if uzvareja:
             self.label_uzvareja = Label(root, text="TU UZVARĒJI!", font=("Arial",35))
-            self.label_uzvareja.pack()
+            self.label_uzvareja.pack(pady=(75,0))
         else:
             self.label_zaudeja = Label(root, text="TU ZAUDĒJI!", font=("Arial",35))
             self.label_vārds = Label(root, text=f"Vārds bija: {self.jauna_spele.vards}", font=("Arial", 20))
-            self.label_zaudeja.pack()
+            self.label_zaudeja.pack(pady=(75,0))
             self.label_vārds.pack()
 
-        self.poga_turpinat = Button(root, text="turpināt", command= lambda: self.nomaina_kadru("sakuma_ekrans"))
+        self.poga_turpinat = Button(root, text="turpināt", font=("Arial",15), command= lambda: self.nomaina_kadru("sakuma_ekrans"))
         self.poga_turpinat.pack()
 
 
