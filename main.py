@@ -1,24 +1,23 @@
 from tkinter import *
-from random import randint, choice
-import sys
-
-#TODO 
-# garakus vardus
+from random import choice
+from time import sleep
 
 
-vardi = [
-    "ābols", "banāns", "cilvēks", "durvis", "ēka", "frāze", "galds", "hokejs", "izglītība", "jūra",
-    "koks", "laiva", "māja", "nakts", "ogle", "pilsēta", "rīts", "saule", "tēvs", "ūdens",
-    "vārds", "zāle", "žogs", "ķirsis", "ļoti", "mēness", "nams", "opera", "pērle", "rūķis",
-    "siena", "tornis", "ūpis", "viesis", "zieds", "žurnāls", "ķēde", "ļaudis", "mētelis", "naktsskapis",
-    "ozols", "pulkstenis", "rati", "sēne", "tēja", "ūdensvīrs", "viesnīca", "zivs", "žurka", "ķirbis",
-    "ļoti", "mēle", "nams", "opera", "pērle", "rūķis", "siena", "tornis", "ūpis", "viesis",
-    "akmens", "balons", "cimdi", "dators", "ēdiens", "futbols", "grāmata", "horizonts", "indekss", "jautājums",
-    "kaķis", "lampa", "maize", "nams", "ogas", "pulkstenis", "raksts", "saldējums", "tornis", "ūdenskrāns",
-    "viesis", "zīmulis", "žurnāls", "ķirbis", "ļaudis", "mētelis", "nakts", "ozols", "pulkstenis", "rati",
-    "sēne", "tēja", "ūdensvīrs", "viesnīca", "zivs", "žurka", "ķirbis", "ļoti", "mēle", "nams",
-    "opera", "pērle", "rūķis", "siena", "tornis", "ūpis", "viesis", "zieds", "žurnāls", "ķēde"
-]
+vardi = ["kaķis", "suns", "zieds", "debess", "jūra", "upe", "mežs", "laiks", "mēness", "saule","mājas", "auto", "bērns",
+        "cilvēks", "prieks", "asaras", "lietus", "sniegs", "vējš", "draugs", "ceļš", "darbs", "skola", "skriet", "iet", "rīts", "vakars",
+        "spēks", "vājums", "daba", "dzīvnieks", "putns", "akmens", "ūdens", "zeme", "gaiss", "krāsas", "māksla", "kultūra", "raksts",
+        "idejas", "ēdiens", "tēvs", "māte", "brālis", "māsa", "ģimene", "bērni", "dzīvot", "elpot", "just", "sapnis", "klusums",
+        "strādāt", "mācīties", "nauda", "tirgus", "veikals", "iela", "parks", "dārzs", "laukums", "stacija", "kuģis",
+        "auto", "braukt", "lēkt", "dejojot", "dziedāt", "runāt", "smiekli", "raudāt", "smaidīt", "mīlēt", "ienīst",
+        "cerēt","saprast", "atrast", "iegūt", "zaudēt","dot", "ņemt", "mirt", "augt",
+        "palīdzēt", "būt", "radīt", "veidot", "šķirties", "tikt", "izprast", "dzīvība", "brīvība", "zīme", "zāle", "smiltis",
+        "vērsis", "silts", "skats", "pasaka", "nakts", "gaisma", "spēles", "vārdi", "jēga", "tīrs", "burvība", "mūža", "ciems",
+        "dzīvot", "staigāt", "brīvs", "laiks", "miers", "dziedāt", "ziedi", "prāts", "saule", "zeme", "kalns", "jūra",
+        "smiltis", "atslēga", "sveiks", "atvērts", "brīvs", "sveiks","tēja", "ziedi", "mīlestība", "cerība", "mīlēt",
+        "ziedu", "nakts", "rīta", "burvība", "svētki","brīnums", "spēks", "cīņa", "uzvara", "zaudējums", "kārta",
+        "rūpes", "sajūta", "prāts", "sirds", "miers", "siltums","māja", "ceļš","nakts", "rīts",
+        "vēlēšanās", "pārdzīvojums", "uzmanība", "radošs", "galva", "garša", "sapnis", "smiekli", "grāmata", "ilgas", "gaisma", "mūzika", "ērts", "smaids"]
+
 alfabets = 'a ā b c č d e ē f g ģ h i ī j k ķ l ļ m n ņ o p r s š t u ū v z ž'
 
 # Canva cilvecina zimesanas laukums
@@ -33,20 +32,11 @@ BACKGROUND = "#808080"
 root = Tk()
 root.resizable(FALSE, FALSE)
 root.option_add("*Background", f"{BACKGROUND}")
-# mainmenu = PhotoImage(Image.open("main_menu.png"))
-
-
-# mainmenu = PhotoImage(file="main_menu.png")
-# mainmenu_label = Label(root, image=mainmenu)
-# mainmenu_label.pack(side="top", fill="both", expand="yes")
-
 
 
 root.title("Karatavas")
 root.geometry(f"{LOGA_PLATUMS}x{LOGA_GARUMS}")
 root.configure(bg="#808080")
-
-#root.resizable(FALSE, FALSE)
 
 
 class Spele:
@@ -54,23 +44,31 @@ class Spele:
         self.vards = choice(vardi)
         self.gajienu_skaits = 7
         self.izmantotie_burti = set()
-        self.cilveka_dalas = []  # Saraksts cilvēka daļu kontrolei
+
 
     def parbauda_burtu_varda(self, burts) -> bool:
         if burts not in self.izmantotie_burti:
             self.izmantotie_burti.add(burts)
+            # Ja burts ir vārdā
             if burts in self.vards:
-                # Pārbauda vai vārds ir pilnībā atminēts
-                atminetie_burti = set(burts for burts in self.izmantotie_burti if burts in self.vards)
-                if set(self.vards) <= atminetie_burti:
-                    self.beidz_speli(True)
                 return True
+            # Ja burts nav vārdā
             else:
                 self.gajienu_skaits -= 1
-                if self.gajienu_skaits == 0:
-                    self.beidz_speli(False)
                 return False
+        # Ja burts ir jau ticis minets
         return None
+    
+    # 1 = spele beidzas ar uzvaru
+    # 0 = spele beidzas ar zaudi
+    # None = spele nav beigusies
+    def parbauda_vai_cauri(self) -> bool:
+        if set(self.vards) <= self.izmantotie_burti:
+            return True
+        if self.gajienu_skaits == 0:
+            return False
+        return None
+
 
     def dabu_index(self,burts) -> list:
         indeksi = []
@@ -78,9 +76,6 @@ class Spele:
             if char == burts:
                 indeksi.append(index)
         return indeksi
-
-    def beidz_speli(self, uzvareja: bool):
-        kadru_zimetajs.nomaina_kadru('beigu_ekrans', uzvareja)
 
 
 class UzzimeKadrus:
@@ -113,22 +108,40 @@ class UzzimeKadrus:
         self.poga_noteikumi.place(relx=0.7, rely=0.53, anchor=CENTER)
         self.poga_iziet.place(relx=0.7, rely=0.68, anchor=CENTER)
         
+
+    def noslepj_cilveku(self):
+        for item in self.cilveka_dalas:
+            self.canvas_cilvecina_zimejums.itemconfigure(item, state="hidden")
+
     
-        
-        
+    def parada_cilveku(self):
+        for item in self.cilveka_dalas:
+            self.canvas_cilvecina_zimejums.itemconfigure(item, state="normal")
+            
 
+    def mirgo(self, n,atrums,i = 0):
+        if i >= n*2:
+            self.nomaina_kadru("beigu_ekrans",False)
+        if i % 2 == 0:
+            self.parada_cilveku()
+        else:
+            self.noslepj_cilveku()
+        root.after(atrums, lambda: self.mirgo(n,atrums,i+1))
 
+    
     def speles_ekrans(self):
         self.jauna_spele = Spele()
 
         # Pārbauda ievadīto burtu un atjaunina GUI
         def nosuti_burtu(event):
             burts = entry_burtu_ievade.get().lower()
-            if len(burts) != 1:  # Pārbauda vai ievadīts tikai viens burts
-                entry_burtu_ievade.delete(0, END)
+            # Ja nekas nav ievadīts, vai ja vairāk par vienu burt ir ievadīts tad ievade netiek ņemta vērā
+            if len(burts) != 1 or not burts.isalpha() or self.jauna_spele.gajienu_skaits == 0:
                 return
             
+            # Pārbauda vai ievadītais burts ir sastopams vārdā
             burts_ir_varda = self.jauna_spele.parbauda_burtu_varda(burts)
+            
             
             if burts_ir_varda is not None:
                 entry_burtu_ievade.delete(0, END)
@@ -151,11 +164,22 @@ class UzzimeKadrus:
                 
                 # Atjaunina atlikušo gājienu skaitu
                 self.label_gajienu_skaits["text"] = f"Atlikuši gājieni: {self.jauna_spele.gajienu_skaits}"
+            
+            self.vai_cauri = self.jauna_spele.parbauda_vai_cauri()
+
+            match self.vai_cauri:
+                case True:
+                    self.nomaina_kadru("beigu_ekrans", True)
+                case False:
+                    self.mirgo(3,600)
+                case None:
+                    pass
+            
 
         self.frame_cilvecins = Frame(root, bg=BACKGROUND, borderwidth=0,)
-        self.frame_speles_lauks = Frame(root, pady=20, bg=BACKGROUND, borderwidth=0)
+        self.frame_speles_lauks = Frame(root, pady=20, bg=BACKGROUND)
 
-        self.canvas_cilvecina_zimejums = Canvas(self.frame_cilvecins, width=PLATUMS, height=GARUMS, borderwidth=0)
+        self.canvas_cilvecina_zimejums = Canvas(self.frame_cilvecins, width=PLATUMS, height=GARUMS, highlightthickness=0)
         self.label_minamais_vards = Label(self.frame_speles_lauks, text=f"_ " * len(self.jauna_spele.vards), font=("Arial",35))
         self.label_izmantotie_burti = Label(self.frame_speles_lauks, text="", font=("Arial", 25))
         entry_burtu_ievade = Entry(self.frame_speles_lauks, width=2, font=("Arial",30))
@@ -182,7 +206,6 @@ class UzzimeKadrus:
             self.canvas_cilvecina_zimejums.create_line(175, 110, 190, 140, state='hidden'),  # Labā roka
             self.canvas_cilvecina_zimejums.create_line(175, 160, 160, 190, state='hidden'),  # Kreisā kāja
             self.canvas_cilvecina_zimejums.create_line(175, 160, 190, 190, state='hidden'),  # Labā kāja
-            self.canvas_cilvecina_zimejums.create_oval(165, 85, 170, 90, state='hidden')     # Acs
         ]
 
         entry_burtu_ievade.bind("<Return>", nosuti_burtu)
@@ -191,7 +214,7 @@ class UzzimeKadrus:
         self.label_gajienu_skaits = Label(self.frame_speles_lauks, 
                                          text=f"Atlikuši gājieni: {self.jauna_spele.gajienu_skaits}",
                                          font=("Arial", 20))
-        self.label_gajienu_skaits.pack(pady=10)
+        self.label_gajienu_skaits.pack()
 
 
     def beigu_ekrans(self, uzvareja:bool):
@@ -205,7 +228,7 @@ class UzzimeKadrus:
             self.label_vārds.pack()
 
         self.poga_turpinat = Button(root, text="turpināt", font=("Arial",15), command= lambda: self.nomaina_kadru("sakuma_ekrans"))
-        self.poga_turpinat.pack()
+        self.poga_turpinat.pack(pady=20)
 
 
     def noteikumu_ekrans(self):
@@ -213,27 +236,23 @@ class UzzimeKadrus:
         noteikumi.title("Noteikumi")
         noteikumi.geometry(f'{LOGA_PLATUMS}x{LOGA_GARUMS}')
         
-        t1 = Label(noteikumi,text="Tev ir 7 gājieni, lai nepakārtu cilvēku!", font=("Arial",10))
-        t2 = Label(noteikumi, text="Ievadi, burtu norādītajā laukā, katrs nepareizais burts atņem tev vienu gājienu!", font=("Arial",10))
-        t3 = Label(noteikumi, text="Atmini vārdu, lai uzvarētu!", font=("Arial",10))
+        self.label_noteikumi = Label(noteikumi,
+                                      text="1. Tev ir 7 gājieni, lai nepakārtu cilvēku! \n" \
+                                      "2. Ievadi, burtu norādītajā laukā, katrs nepareizais burts atņem tev vienu gājienu! \n" \
+                                      "3. Atmini vārdu, lai uzvarētu! \n",
+                                      wraplength=600,
+                                      font=("Arial",20),
+                                      justify=LEFT)
         
-        t1.pack(pady=(125,0))
-        t2.pack()
-        t3.pack()
+        self.label_noteikumi.pack(pady=(100,0))
         
-
     def nodzes_kadru(self):
         for widget in root.winfo_children():
+            # neizdzest noteikumu ekranu
+            if isinstance(widget, Toplevel):
+                continue
             widget.destroy()
 
 kadru_zimetajs = UzzimeKadrus()
 kadru_zimetajs.sakuma_ekrans()
 root.mainloop()
-'''
-# noteikumi
-1) Vadi laukā burtus, lai atminētu vārdud.
-2) Tev ir 7 dzīvības, par katru nepareizo minējumu zaudēsi dzīvību.
-3) Lai spēlē uzvarētu tev jāuzmin apslēptais vārds.
-4) Ja vārdu jau zini, tad to droši vadi iekšā.
-VEISKMI!
-'''
